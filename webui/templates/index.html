@@ -1,0 +1,64 @@
+<!-- webui/templates/index.html -->
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <title>Video Translate — Import</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+  <h1>Traduction / Doublage de vidéo</h1>
+
+  <form action="/process" method="post" enctype="multipart/form-data">
+    <div class="field">
+      <label>Vidéo</label>
+      <input type="file" name="video_file" accept="video/*" required>
+    </div>
+
+    <div class="field">
+      <label>Langue source</label>
+      <select name="src_lang">
+        {% for l in langs %}
+          <option value="{{ l.code }}" {% if l.code == 'auto' %}selected{% endif %}>{{ l.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Langue cible</label>
+      <select name="tgt_lang">
+        {% for l in langs %}
+          <option value="{{ l.code }}" {% if l.code == 'fr' %}selected{% endif %}>{{ l.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Voix</label>
+      <select name="tts_mode" id="tts_mode">
+        <option value="generate" selected>Générer une voix (Edge TTS)</option>
+        {% if has_coqui %}
+          <option value="clone">Cloner une voix (Coqui XTTS)</option>
+        {% endif %}
+      </select>
+    </div>
+
+    <div class="field" id="clone_block" style="display:none">
+      <label>Échantillon voix (≥3s, WAV/MP3)</label>
+      <input type="file" name="voice_sample" accept="audio/*">
+    </div>
+
+    <button type="submit">Traduire</button>
+  </form>
+
+  <script>
+    const mode = document.getElementById('tts_mode');
+    const block = document.getElementById('clone_block');
+    function refresh() {
+      block.style.display = (mode.value === 'clone') ? 'block' : 'none';
+    }
+    mode.addEventListener('change', refresh);
+    refresh();
+  </script>
+</body>
+</html>

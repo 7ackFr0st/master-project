@@ -1,0 +1,41 @@
+<!-- webui/templates/review.html -->
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <title>Révision des sous-titres</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+  <h1>Révision des traductions</h1>
+
+  <form action="/save_edits" method="post">
+    <input type="hidden" name="job" value="{{ job }}">
+    <input type="hidden" name="tgt_lang" value="{{ tgt_lang }}">
+    <input type="hidden" name="tts_mode" value="{{ tts_mode }}">
+
+    <table class="subs">
+      <thead>
+        <tr><th>#</th><th>Temps</th><th>Texte source</th><th>Traduction (éditable)</th></tr>
+      </thead>
+      <tbody>
+      {% for s in segments %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ "%.3f"|format(s.start) }} → {{ "%.3f"|format(s.end) }}</td>
+          <td class="src">{{ s.text }}</td>
+          <td>
+            <textarea name="translation_{{ loop.index0 }}" rows="2">{{ s.translation or "" }}</textarea>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="actions">
+      <a href="/" class="btn secondary">⟵ Recommencer</a>
+      <button type="submit" class="btn primary">Enregistrer & Continuer → Synthèse vocale</button>
+    </div>
+  </form>
+</body>
+</html>

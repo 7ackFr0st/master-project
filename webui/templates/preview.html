@@ -1,0 +1,59 @@
+<!-- webui/templates/preview.html -->
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <title>Pré-écoute & Synthèse</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+  <h1>Pré-écoute</h1>
+
+  <div class="players">
+    <div>
+      <h3>Audio original</h3>
+      {% if original_wav_url %}
+        <audio controls src="{{ original_wav_url }}"></audio>
+        <p><a href="{{ original_wav_url }}" download>Télécharger l’audio original</a></p>
+      {% else %}
+        <em>Audio original indisponible.</em>
+      {% endif %}
+    </div>
+
+    <div>
+      <h3>Audio synthèse ({{ tgt_lang }})</h3>
+      {% if final_wav_url %}
+        <audio controls src="{{ final_wav_url }}"></audio>
+        <p><a href="{{ final_wav_url }}" download>Télécharger l’audio synthèse</a></p>
+      {% else %}
+        <em>Pas encore généré.</em>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="actions">
+    <a class="btn secondary" href="/process">⟵ Revenir</a>
+    <a class="btn" href="/synthesize?job={{ job }}&tgt_lang={{ tgt_lang }}&tts_mode={{ tts_mode }}">▶ Générer / Régénérer la voix</a>
+
+    {% if final_wav_url %}
+    <form action="/render" method="post" style="display:inline-block">
+      <input type="hidden" name="job" value="{{ job }}">
+      <input type="hidden" name="tgt_lang" value="{{ tgt_lang }}">
+      <input type="hidden" name="tts_mode" value="{{ tts_mode }}">
+      <button class="btn primary" type="submit">🎬 Générer la vidéo finale</button>
+    </form>
+    {% endif %}
+  </div>
+
+  <h2>Segments (aperçu)</h2>
+  <ol class="segments">
+    {% for s in segments %}
+      <li>
+        <div class="time">{{ "%.3f"|format(s.start) }} → {{ "%.3f"|format(s.end) }}</div>
+        <div class="txt-src">{{ s.text }}</div>
+        <div class="txt-tr">{{ s.translation }}</div>
+      </li>
+    {% endfor %}
+  </ol>
+</body>
+</html>
